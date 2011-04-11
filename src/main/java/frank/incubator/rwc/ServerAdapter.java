@@ -60,7 +60,9 @@ public class ServerAdapter extends HttpServlet {
 		try {
 			ShellResult sr = ShellUtils.execute(cmd);
 			ret = sr.getOutputMsg();
-			ret += "<"+sr.getErrorMsg()+">";
+			String err =sr.getErrorMsg();
+			if(err!=null && !err.trim().equals(""))
+				ret += "["+err+"]";
 		}catch(Exception e) {
 			e.printStackTrace();
 			ret = e.getMessage();

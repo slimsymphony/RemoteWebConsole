@@ -12,4 +12,14 @@
   	<servlet-name>adapter</servlet-name>
   	<url-pattern>/adapter</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+  	<servlet-name>receiveFile</servlet-name>
+  	<servlet-class>frank.incubator.rwc.ReceiveFileServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>receiveFile</servlet-name>
+  	<url-pattern>/receiveFile</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

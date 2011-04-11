@@ -1,5 +1,6 @@
 package frank.incubator.rwc;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ServerAdapter extends HttpServlet {
 	private static final long serialVersionUID = 7099744625181127555L;
+	private String base;
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -33,8 +35,12 @@ public class ServerAdapter extends HttpServlet {
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		try {
-			String executable = receive(request);
-			String result = exec(executable);
+			String cmd = request.getParameter("cmd");
+			String base = request.getParameter("base");
+			File basePath = null;
+			if(base!=null&&!base.trim().equals(""))
+				basePath = new File(base);
+			String result = exec(cmd,basePath);
 			sendBack(result,response);
 		}catch(Exception ex) {
 			ex.printStackTrace();
@@ -55,10 +61,10 @@ public class ServerAdapter extends HttpServlet {
 		}
 	}
 
-	private String exec(String cmd) {
+	private String exec(String cmd,File base) {
 		String ret = null;
 		try {
-			ShellResult sr = ShellUtils.execute(cmd);
+			ShellResult sr = ShellUtils.execute(cmd,base);
 			ret = sr.getOutputMsg();
 			String err =sr.getErrorMsg();
 			if(err!=null && !err.trim().equals(""))
@@ -69,10 +75,5 @@ public class ServerAdapter extends HttpServlet {
 		}
 		return ret;
 	}
-
-	private String receive(HttpServletRequest request) {
-		// 参数格式定制
-		String cmd = request.getParameter("cmd");
-		return cmd;
-	}
+	
 }

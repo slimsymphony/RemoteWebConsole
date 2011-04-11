@@ -1,6 +1,7 @@
 package frank.incubator.rwc;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
@@ -8,11 +9,7 @@ import java.io.StringWriter;
 
 public class ShellUtils {
 
-	public static void main(String args[]) throws Exception {
-		execute(args[0]);
-	}
-
-	public static ShellResult execute(String givenCmd) {
+	public static ShellResult execute(String givenCmd,File base) {
 		int exitVal = -99;
 		ShellResult sr = null;
 		ByteArrayOutputStream bss = null;
@@ -38,7 +35,7 @@ public class ShellUtils {
 			}
 
 			Runtime rt = Runtime.getRuntime();
-			Process proc = rt.exec(cmd[0] + "" + cmd[1] + "" + cmd[2]);
+			Process proc = rt.exec(cmd[0] + "" + cmd[1] + "" + cmd[2],null,base);
 			// 开始获取输出
 
 			bss = new ByteArrayOutputStream();

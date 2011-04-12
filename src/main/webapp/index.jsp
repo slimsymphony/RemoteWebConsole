@@ -198,7 +198,7 @@
 			<div id="pathDiv" style="display:none" class="pathDiv">
 				<iframe width="99%" height="99%" id="pathFrame" src="path.jsp?path=/"></iframe>
 			</div>
-			<textarea readonly="true" id="screen" class="screen"></textarea>
+			<textarea id="screen" class="screen"></textarea>
 			<input class="cmdline" type="text" size="80" id="console" />
 			<button id="pathBtn">设定执行路径</button>
 			<button id="clearBtn">清空屏幕</button>

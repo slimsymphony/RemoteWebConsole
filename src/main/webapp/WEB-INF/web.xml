@@ -21,5 +21,13 @@
   	<servlet-name>receiveFile</servlet-name>
   	<url-pattern>/receiveFile</url-pattern>
   </servlet-mapping>
-  
+	
+  <servlet>
+  	<servlet-name>auth</servlet-name>
+  	<servlet-class>frank.incubator.rwc.AuthServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>auth</servlet-name>
+  	<url-pattern>/auth</url-pattern>
+  </servlet-mapping>
 </web-app>

@@ -16,6 +16,18 @@
 				color:#00FF00;
 				##overflow: auto;
 			}
+			.auth{
+				position : absolute;top:130px;left:150px;width:35%;height:40%;
+				border: dashed;
+				border-width:thick;
+				font-family: 微软雅黑;
+				font-size:10pt;
+				color:#0000FF;
+				background-color : white;
+				z-index:150;
+				text-align:center;
+				vertical-align:middle;
+			}
 			.pathDiv{
 				position : absolute;top:110px;left:100px;bottom:100px;right:100px;
 				border:outset;
@@ -123,6 +135,35 @@
 				}
 			}
 			
+			function showAuth(){
+				dojo.byId("authDiv").style.display = 'block';
+			}
+			
+			function authSubmit(){
+				var content = {'user':dojo.byId("user").value,'pass':dojo.byId("pass").value};
+				var authDiv = dojo.byId("authDiv");
+				var xhrArgs = {
+						url: "auth",
+						content: content,
+						handleAs: "json",
+						preventCache: true,
+						load: function(data){
+							alert(2);
+							if(data.result==true){
+								authDiv.style.display='none';
+								dojo.byId("allDiv").style.display='block';
+							}else{
+								alert('认证失败请重试');
+							}
+						},
+						error: function(error){
+							alert('认证失败请重试');
+						}
+					}
+				alert(3);
+				dojo.xhrPost(xhrArgs);
+			}
+			
 			function init(){
 				var console = dojo.byId("console");
 				dojo.connect(console,"onkeypress",press);
@@ -134,27 +175,40 @@
 				dojo.connect(rb,"onclick",resetPath);
 				var ub = dojo.byId("uploadBtn");
 				dojo.connect(ub,"onclick",uploadFile);
+				var ob = dojo.byId("okBtn");
+				dojo.connect(ob,"onclick",authSubmit);
+				var lb = dojo.byId("cancelBtn");
+				dojo.connect(lb,"onclick",function(){window.location='index.html';});
+				
+				showAuth();
 			}
 			
 			dojo.addOnLoad(init);
 		</script>
 	</head>
 	<body>
-		<iframe id="fileupload" style="display:none"></iframe>
-		<!--div id="screen" class="screen"></div-->
-		<div id="pathDiv" style="display:none" class="pathDiv">
-			<iframe width="99%" height="99%" id="pathFrame" src="path.jsp?path=/"></iframe>
+		<div id="authDiv" style="display:none" class="auth">
+			用户名:<input type="text" name="user" id="user" /><br/>
+			密码:<input type="password" name="pass" id="pass"/><br/>
+			<button id="okBtn">确定</button>&nbsp;&nbsp;&nbsp;
+			<button id="cancelBtn">取消</button>
 		</div>
-		<textarea id="screen" class="screen"></textarea>
-		<input class="cmdline" type="text" size="80" id="console" />
-		<button id="pathBtn">设定执行路径</button>
-		<button id="clearBtn">清空屏幕</button>
-		<span id="currPathSpan"></span>
-		<button id="resetBtn">重置路径</button>
-		<button id="uploadBtn">上传文件</button>
-		<form name="upForm" id="upForm" method="post" action="receiveFile" enctype="multipart/form-data">
-			<input type="file" name="file" id="file"/>
-			<input type="hidden" name="uploadPath" id="uploadPath" value="" />
-		</form>
+		<div id="allDiv" style="display:none;width:100%;height:100%;top:0px;left:0px">
+			<!--div id="screen" class="screen"></div-->
+			<div id="pathDiv" style="display:none" class="pathDiv">
+				<iframe width="99%" height="99%" id="pathFrame" src="path.jsp?path=/"></iframe>
+			</div>
+			<textarea readonly="true" id="screen" class="screen"></textarea>
+			<input class="cmdline" type="text" size="80" id="console" />
+			<button id="pathBtn">设定执行路径</button>
+			<button id="clearBtn">清空屏幕</button>
+			<span id="currPathSpan"></span>
+			<button id="resetBtn">重置路径</button>
+			<button id="uploadBtn">上传文件</button>
+			<form name="upForm" id="upForm" method="post" action="receiveFile" enctype="multipart/form-data">
+				<input type="file" name="file" id="file"/>
+				<input type="hidden" name="uploadPath" id="uploadPath" value="" />
+			</form>
+		</div>
 	</body>
 </html>

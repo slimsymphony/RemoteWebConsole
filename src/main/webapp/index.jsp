@@ -1,4 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
+<%
+	String defaultPath = System.getProperty("user.dir").replaceAll("\\\\","/");
+%>
 <html>
 	<head>
 		<title>RWC</title>
@@ -48,18 +51,16 @@
 			var djConfig = {
 				//require:['dojo.io.iframe']
 			}
-			var currentPath='';
+			var currentPath='<%=defaultPath%>';
 			//dojo.require("dojo.io.iframe");
 			dojo.require("dojo.io.iframe"); 
 			
 			function send(){
-				alert(1);
 				var cmd = dojo.trim(dojo.byId("console").value);
 				dojo.byId("console").value = "";
 				var content = {"cmd": cmd };
 				if(currentPath!='')
 					content = {"cmd":cmd,"base":currentPath};
-				alert(content);
 				var ck = dojo.byId("setEnv");
 				if(ck.checked){
 					var envs = dojo.query("#envUL>li>input");
@@ -68,13 +69,12 @@
 						content[envs[i].id]=envs[i].value;
 					}
 				}
-				alert(content);
 				if(cmd!=''){
 					var xhrArgs = {
 						url: "adapter",
 						content: content,
 						handleAs: "text",
-						preventCache: true,
+						//preventCache: true,
 						load: function(data){
 							//alert(data);
 							var screen = dojo.byId("screen");
@@ -222,7 +222,7 @@
 			<button id="clearBtn">清空屏幕</button>
 			<button id="pathBtn">设定执行路径</button>
 			设定环境参数<input id="setEnv" type="checkbox"/>
-			<span id="currPathSpan"></span>
+			<span id="currPathSpan"><%=defaultPath%></span>
 			<button id="resetBtn">重置路径</button>
 			<button id="uploadBtn">上传文件</button>
 			<form name="upForm" id="upForm" method="post" action="receiveFile" enctype="multipart/form-data">

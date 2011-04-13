@@ -34,6 +34,7 @@ public class ReceiveFileServlet extends HttpServlet {
 		FileOutputStream fos = null;
 		InputStream in = null;
 		try {
+			@SuppressWarnings("unchecked")
 			List<FileItem> list = sfu.parseRequest(request);
 			//FileItemIterator it = sfu.getItemIterator(request);
 	

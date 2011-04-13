@@ -2,7 +2,7 @@ package frank.incubator.rwc;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ResourceBundle;
+import java.util.Properties;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,9 +37,11 @@ public class AuthServlet extends HttpServlet {
 		}
 		InputStream in = null;
 		try {
-			ResourceBundle props = ResourceBundle.getBundle("encrypt.properties");
-			String auser = props.getString("user");
-			String apass = props.getString("pass");
+			in = AuthServlet.class.getClassLoader().getResourceAsStream("encrypt.properties");
+			Properties props = new Properties();
+			props.load(in);
+			String auser = (String)props.get("user");
+			String apass = (String)props.get("pass");
 			if ( user.equals( auser ) ) {
 				String enPass = new String(EncryptUtils.encryptBASE64(pass.getBytes()));
 				if( apass.equals(enPass.trim() )){

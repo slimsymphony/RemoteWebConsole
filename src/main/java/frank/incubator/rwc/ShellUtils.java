@@ -8,8 +8,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class ShellUtils {
+	
+	public static void main(String[] args) {
+		ShellResult sr = execute(args[0],new String[]{args[1]},new File(args[2]));
+		System.out.println(sr.getOutputMsg());
+		System.out.println(sr.getErrorMsg());
+	}
 
-	public static ShellResult execute(String givenCmd,File base) {
+	public static ShellResult execute(String givenCmd,String[] envs,File base) {
 		int exitVal = -99;
 		ShellResult sr = null;
 		ByteArrayOutputStream bss = null;
@@ -35,7 +41,8 @@ public class ShellUtils {
 			}
 
 			Runtime rt = Runtime.getRuntime();
-			Process proc = rt.exec(cmd[0] + "" + cmd[1] + "" + cmd[2],null,base);
+			System.out.println(cmd[0] + "" + cmd[1] + "" + cmd[2]+">>"+base.getAbsolutePath());
+			Process proc = rt.exec(cmd[0] + "" + cmd[1] + "" + cmd[2],envs,base);
 			// 开始获取输出
 
 			bss = new ByteArrayOutputStream();

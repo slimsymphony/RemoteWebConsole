@@ -8,7 +8,7 @@
 		<meta http-equiv="expires" content="0"/>
 		<style>
 			.screen{
-				position : absolute;top:130px;left:150px;bottom:120px;right:200px;width:75%;height:60%;
+				position : absolute;top:150px;left:150px;bottom:120px;right:200px;width:75%;height:60%;
 				border: dashed;
 				background-color:black;
 				font-family:Courier;
@@ -53,11 +53,22 @@
 			dojo.require("dojo.io.iframe"); 
 			
 			function send(){
+				alert(1);
 				var cmd = dojo.trim(dojo.byId("console").value);
 				dojo.byId("console").value = "";
-				var content = {"cmd":cmd};
+				var content = {"cmd": cmd };
 				if(currentPath!='')
 					content = {"cmd":cmd,"base":currentPath};
+				alert(content);
+				var ck = dojo.byId("setEnv");
+				if(ck.checked){
+					var envs = dojo.query("#envUL>li>input");
+					var envstr = '';
+					for(var i=0;i<envs.length;i++){
+						content[envs[i].id]=envs[i].value;
+					}
+				}
+				alert(content);
 				if(cmd!=''){
 					var xhrArgs = {
 						url: "adapter",
@@ -148,7 +159,6 @@
 						handleAs: "json",
 						preventCache: true,
 						load: function(data){
-							alert(2);
 							if(data.result==true){
 								authDiv.style.display='none';
 								dojo.byId("allDiv").style.display='block';
@@ -160,7 +170,6 @@
 							alert('认证失败请重试');
 						}
 					}
-				alert(3);
 				dojo.xhrPost(xhrArgs);
 			}
 			
@@ -179,6 +188,16 @@
 				dojo.connect(ob,"onclick",authSubmit);
 				var lb = dojo.byId("cancelBtn");
 				dojo.connect(lb,"onclick",function(){window.location='index.html';});
+				var ck = dojo.byId("setEnv");
+				dojo.connect(ck,"onchange",function(){
+					var ck = dojo.byId("setEnv");
+					var envUL = dojo.byId("envUL");
+					if(ck.checked){
+						envUL.style.display='block';
+					}else{
+						envUL.style.display='none';
+					}
+				});
 				
 				showAuth();
 			}
@@ -200,8 +219,9 @@
 			</div>
 			<textarea id="screen" class="screen"></textarea>
 			<input class="cmdline" type="text" size="80" id="console" />
-			<button id="pathBtn">设定执行路径</button>
 			<button id="clearBtn">清空屏幕</button>
+			<button id="pathBtn">设定执行路径</button>
+			设定环境参数<input id="setEnv" type="checkbox"/>
 			<span id="currPathSpan"></span>
 			<button id="resetBtn">重置路径</button>
 			<button id="uploadBtn">上传文件</button>
@@ -209,6 +229,11 @@
 				<input type="file" name="file" id="file"/>
 				<input type="hidden" name="uploadPath" id="uploadPath" value="" />
 			</form>
+			<ul id="envUL" style="display:none;">
+				<li><span>PATH</span><input type="text" id="PATH" value="/home/ias10gpub/ias10g/opmn/bin:/home/ias10gpub/ias10g/bin:/usr/local/bin:/usr/sbin:/usr/bin:/etc:."/></li>
+				<li><span>LANG</span><input type="text" id="LANG" value="zh_CN.GB18030" /></li>
+				<li><span>SHELL</span><input type="text" id="SHELL" value="/bin/bash" /></li>
+			</ul>
 		</div>
 	</body>
 </html>

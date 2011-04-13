@@ -3,6 +3,9 @@ package frank.incubator.rwc;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,12 +38,23 @@ public class ServerAdapter extends HttpServlet {
 	public void service(HttpServletRequest request, HttpServletResponse response)
 			throws IOException, ServletException {
 		try {
+			Set<String> paramNames = request.getParameterMap().keySet();
 			String cmd = request.getParameter("cmd");
 			String base = request.getParameter("base");
+			List<String> envs = new ArrayList<String>();
+			for(String name : paramNames) {
+				if(name.equals("cmd"))
+					continue;
+				if(name.equals("base"))
+					continue;
+				envs.add(name+"="+request.getParameter(name));
+			}
+			 
+			
 			File basePath = null;
 			if(base!=null&&!base.trim().equals(""))
 				basePath = new File(base);
-			String result = exec(cmd,basePath);
+			String result = exec(cmd,basePath,envs.toArray(new String[0]));
 			sendBack(result,response);
 		}catch(Exception ex) {
 			ex.printStackTrace();
@@ -61,10 +75,12 @@ public class ServerAdapter extends HttpServlet {
 		}
 	}
 
-	private String exec(String cmd,File base) {
+	private String exec(String cmd,File base,String[] envs) {
 		String ret = null;
+		if(envs.length==0)
+			envs = null;
 		try {
-			ShellResult sr = ShellUtils.execute(cmd,base);
+			ShellResult sr = ShellUtils.execute(cmd,envs,base);
 			ret = sr.getOutputMsg();
 			String err =sr.getErrorMsg();
 			if(err!=null && !err.trim().equals(""))

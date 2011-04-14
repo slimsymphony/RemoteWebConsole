@@ -20,7 +20,7 @@
 				##overflow: auto;
 			}
 			.auth{
-				position : absolute;top:130px;left:150px;width:35%;height:40%;
+				position : absolute;top:130px;left:350px;width:35%;height:40%;
 				border: dashed;
 				border-width:thick;
 				font-family: 微软雅黑;
@@ -54,10 +54,64 @@
 			var currentPath='<%=defaultPath%>';
 			//dojo.require("dojo.io.iframe");
 			dojo.require("dojo.io.iframe"); 
+			//dojo.require("dojo.cookie");
+			dojo.require("dojo.string");
+			dojo.require("dojo.number");
+			
+			var cmdHistory = [];
+			
+			function sendToScreen( data ){
+				var screen = dojo.byId("screen");
+				screen.value += data+"\r\n";
+				screen.scrollTop = screen.scrollHeight - screen.clientHeight;
+				dojo.byId("console").value = "";
+			}
+			
+			function isInt(x){
+				if (!x) return true;
+			
+				var i, y;
+				for (i = 0; i < x.length; i++){
+					y = x.charCodeAt(i);
+					if ((y > 57) || (y < 48))
+						return false;
+				}
+				return true;
+			}
 			
 			function send(){
 				var cmd = dojo.trim(dojo.byId("console").value);
-				dojo.byId("console").value = "";
+				if (cmd == '-h') {
+					sendToScreen('[-h] for help \r\n [-a] list all history command \r\n [-c] show history count \r\n [-l num] show last num command');
+					return;
+				}
+				else if (cmd == '-a') {
+						if(cmdHistory.length==0)
+							dojo.byId("console").value = "";
+						for (var data in cmdHistory) {
+							sendToScreen(cmdHistory[data]);
+						}
+						return;
+				}
+				else if (cmd == '-c') {
+					sendToScreen(cmdHistory.length);
+					return;
+				}
+				else if (cmd.indexOf('-l') == 0) {
+					var lastNum = dojo.trim(cmd.substr(2));
+					if (isInt(lastNum)) {
+						//sendToScreen(cmdHistory[cmdHistory.length - lastNum]);
+						dojo.byId("console").value = cmdHistory[cmdHistory.length - lastNum];
+						return;
+					}
+					else {
+						sendToScreen('Bad Command');
+						return;
+					}
+				}else {
+					cmdHistory.push(cmd);
+				}
+				
 				var content = {"cmd": cmd };
 				if(currentPath!='')
 					content = {"cmd":cmd,"base":currentPath};
@@ -77,14 +131,11 @@
 						//preventCache: true,
 						load: function(data){
 							//alert(data);
-							var screen = dojo.byId("screen");
-							//screen.innerHTML += data+"<br/>";
-							screen.value += data+"\r\n";
-							screen.scrollTop = screen.scrollHeight - screen.clientHeight;
+							sendToScreen(data);
 						},
 						error: function(error){
 							alert(error);
-							screen.innerHTML = "An unexpected error occurred: " + error;
+							sendToScreen("An unexpected error occurred: " + error);
 						}
 					}
 					dojo.xhrPost(xhrArgs);
@@ -132,7 +183,7 @@
 					
 					dojo.io.iframe.send({
 						url:'receiveFile',
-						form: "upForm", //某个form元素包含本地文件路径
+						form: "upForm", 
 					    handleAs: "html", //服务器将返回html
 					    load: function(data){
 							alert(data.body.firstChild.innerHTML);
@@ -140,7 +191,7 @@
 						},
 					    error: function(error){
 							alert(error);
-							screen.value = "An unexpected error occurred: " + error;
+							sendToScreen("An unexpected error occurred: " + error);
 						}
 					});
 				}
@@ -207,8 +258,11 @@
 	</head>
 	<body>
 		<div id="authDiv" style="display:none" class="auth">
-			用户名:<input type="text" name="user" id="user" /><br/>
-			密码:<input type="password" name="pass" id="pass"/><br/>
+			<br/>
+			<span>远程管理登录</span>
+			<br/><br/><br/>
+			用户名:<input type="text" name="user" id="user" /><br/><br/>
+			密码:<input type="password" name="pass" id="pass"/><br/><br/>
 			<button id="okBtn">确定</button>&nbsp;&nbsp;&nbsp;
 			<button id="cancelBtn">取消</button>
 		</div>
